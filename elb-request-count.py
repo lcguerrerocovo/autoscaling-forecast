@@ -8,16 +8,22 @@ from datetime import timedelta
 import collections
 import pdb
 import csv
+import argparse
 
 def as_ordered_dict(dictionary):
     return collections.OrderedDict(sorted(dictionary.items(), key=lambda t: t[0]))
+
+parser = argparse.ArgumentParser(description='Export request count from AWS load balancers tied to same cluster')
+parser.add_argument('-l','--load-balancers', nargs='+', type=str, required=True)
+
+args = parser.parse_args()
+load_balancers = args.load_balancers
 
 cloudwatch = boto3.client('cloudwatch')
 
 period=60
 namespace = "AWS/ELB"
 metric_name = 'RequestCount'
-load_balancers = ['awseb-e-r-AWSEBLoa-LLUOP3IMS3OR','awseb-e-s-AWSEBLoa-1VOWO717O53D9','awseb-e-t-AWSEBLoa-8DND8M2NXA06','awseb-e-e-AWSEBLoa-1PS22JQJBUXKT']
 
 today = datetime.now().date()
 dates = [today - timedelta(days=i) for i in range(14,0,-1)]
